@@ -1,0 +1,25 @@
+# ============================================
+# Bamboo Frontend - Development Dockerfile
+# ============================================
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies first for caching
+COPY package.json package-lock.json* yarn.lock* pnpm-lock.yaml* ./
+
+RUN \
+    if [ -f yarn.lock ]; then yarn; \
+    elif [ -f package-lock.json ]; then npm install; \
+    elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
+    else npm install; \
+    fi
+
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
+

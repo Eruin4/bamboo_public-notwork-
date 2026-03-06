@@ -1,0 +1,45 @@
+# ============================================
+# Development Override
+# 사용법: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# ============================================
+version: "3.8"
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ../backend:/app
+      - ./dev-data/uploads:/data/uploads
+      - ./dev-data/thumbs:/data/thumbs
+    environment:
+      DEBUG: "true"
+      ENVIRONMENT: development
+      EMAIL_MODE: console
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+
+  nginx:
+    ports:
+      - "3000:80"
+

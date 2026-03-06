@@ -1,0 +1,4 @@
+# SSL 인증서 파일을 이 디렉토리에 배치하세요.
+# - fullchain.pem
+# - privkey.pem
+
